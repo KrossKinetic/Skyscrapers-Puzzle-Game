@@ -35,11 +35,23 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
     for (int i = 0; i < size; i++){
 		for (int j = 0; j < size; j++){
             char choice = (initial_state[i*(size)+j]);
+            // Checking for Rule 1
             if (choice != '-' && check_board_row_col(size,choice,i,j)==0){
                 printf("Invalid initial board state.\n");
                 return 0;
             }
 			board[i][j] = choice;
+
+            // Checking for Rule 2
+            if (check_row_filled(size,i) == 1 && check_2nd_key_req_row(size,i)==0){
+                printf("Invalid initial board state.\n");
+                return 0;
+            }
+    
+            if (check_col_filled(size,j) == 1 && check_2nd_key_req_col(size,j)==0){
+                printf("Invalid initial board state.\n");
+                return 0;
+            }
 		}
 	}
 
