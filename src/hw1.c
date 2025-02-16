@@ -31,7 +31,15 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
     //Initialized Board, (cmake -S . -B build; cmake --build build; ./build/hw1...)
     //./build/hw1_game 4 "3-2-431-1-4--1-4" "2124242121333321"
     //./build/hw1_game 4 "3-21-3---2---1--" "2124242121333321"
-	
+
+    // Initialize Entire Board with '-'
+    for (int i = 0; i < size; i++){
+		for (int j = 0; j < size; j++){
+            board[i][j] = '-';
+		}
+	}
+
+
     // Initialized Keys
     for (int i = 0; i < 4; i++){
         for (int j = 0; j < size; j++){
@@ -54,7 +62,6 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
             int sus_input = 0;
             // Checking for Rule 1
             if (choice != '-' && check_board_row_col(size,choice,i,j)==0) sus_input = 1;
-			
             board[i][j] = choice;
 
             // Checking for Rule 2
