@@ -63,7 +63,7 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
         print_2D_array(size);
         
         while (doQuit && correct_value_1){
-            printf("Choose a piece (1-4) or q to quit: ");
+            printf("Choose a piece (1-%d) or q to quit: ",size);
             scanf(" %c", &choice);
             getchar();
             
@@ -85,7 +85,7 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
         }
 
         while (correct_value_2){
-            printf("Choose a row (0-3): ");
+            printf("Choose a row (0-%d): ",size-1);
             scanf(" %d", &row);
             getchar();
 
@@ -98,7 +98,7 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
         }
 
         while (correct_value_3){
-            printf("Choose a column (0-3): ");
+            printf("Choose a column (0-%d): ",size-1);
             scanf(" %d", &col);
             getchar();
 
