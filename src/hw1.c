@@ -15,7 +15,10 @@ char board[MAX_LENGTH][MAX_LENGTH] = {0};
 int length = 5;
 
 // List of Helper Functions
-int check_2nd_key_req(int size, int col, int row);
+int check_col_filled(int size, int col);
+int check_row_filled(int size, int row);
+int check_2nd_key_req_row(int size, int row);
+int check_2nd_key_req_col(int size, int col);
 int check_board_row_col(int size, char value,int row,int col);
 int check_board(int size);
 void print_2D_array(int size);
@@ -124,12 +127,19 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
 
         board[row][col] = choice;
         
+        if (check_row_filled(size,row) == 1 && check_2nd_key_req_row(size,row)==0){
+            printf("Invalid choice. You violate one of the key requirements.\n");
+            board[row][col] = '-';
+            continue;
+        }
+
+        if (check_col_filled(size,col) == 1 && check_2nd_key_req_col(size,col)==0){
+            printf("Invalid choice. You violate one of the key requirements.\n");
+            board[row][col] = '-';
+            continue;
+        }
+        
         if (check_board(size)==1){
-            if (check_2nd_key_req(size,col,row)==0){
-                printf("Invalid choice. You violate one of the key requirements.\n");
-                board[row][col] = '-';
-                continue;
-            }
             printf("Congratulations, you have filled the board!\n");
             print_2D_array(size);
             break;
@@ -140,11 +150,62 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
 	return 1;
 }
 
-int check_2nd_key_req(int size, int col, int row){
-    int visibility_goal_top = top_key[col];
-    int visibility_goal_bottom = bottom_key[col];
+int check_col_filled(int size, int col){
+    for (int i = 0; i < size; i++){
+        if (board[i][col] == '-'){
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int check_row_filled(int size, int row){
+    for (int i = 0; i < size; i++){
+        if (board[row][i] == '-'){
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int check_2nd_key_req_row(int size, int row){
     int visibility_goal_right = right_key[row];
     int visibility_goal_left = left_key[row];
+    int visibilty = 1;
+    char tallest_building;
+
+    // Check Left
+    if (visibility_goal_left != 0){
+        tallest_building = board[row][0];
+        for (int i = 0; i < size; i++){
+            if (board[row][i]>tallest_building){
+                tallest_building = board[row][i];
+                visibilty++;
+            }
+        }
+        if (visibility_goal_left != visibilty) return 0;
+        visibilty = 1;
+    }
+
+    // Check Right
+    if (visibility_goal_right != 0){
+        tallest_building = board[row][size-1];
+        for (int i = size-2; i >= 0; i--){
+            if (board[row][i]>tallest_building){
+                tallest_building = board[row][i];
+                visibilty++;
+            }
+        }
+        if (visibility_goal_right != visibilty) return 0;
+        visibilty = 1;
+    }
+
+    return 1;
+}
+
+int check_2nd_key_req_col(int size, int col){
+    int visibility_goal_top = top_key[col];
+    int visibility_goal_bottom = bottom_key[col];
     int visibilty = 1;
     char tallest_building;
 
@@ -171,32 +232,6 @@ int check_2nd_key_req(int size, int col, int row){
             }
         }
         if (visibility_goal_bottom != visibilty) return 0;
-        visibilty = 1;
-    }
-    
-    // Check Left
-    if (visibility_goal_left != 0){
-        tallest_building = board[row][0];
-        for (int i = 0; i < size; i++){
-            if (board[row][i]>tallest_building){
-                tallest_building = board[row][i];
-                visibilty++;
-            }
-        }
-        if (visibility_goal_left != visibilty) return 0;
-        visibilty = 1;
-    }
-    
-    // Check Right
-    if (visibility_goal_right != 0){
-        tallest_building = board[row][size-1];
-        for (int i = size-2; i >= 0; i--){
-            if (board[row][i]>tallest_building){
-                tallest_building = board[row][i];
-                visibilty++;
-            }
-        }
-        if (visibility_goal_right != visibilty) return 0;
         visibilty = 1;
     }
 
