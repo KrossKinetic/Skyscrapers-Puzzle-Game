@@ -34,7 +34,12 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
 	
     for (int i = 0; i < size; i++){
 		for (int j = 0; j < size; j++){
-			board[i][j] = (initial_state[i*(size)+j]);
+            char choice = (initial_state[i*(size)+j]);
+            if (choice != '-' && check_board_row_col(size,choice,i,j)==0){
+                printf("Invalid initial board state.\n");
+                return 0;
+            }
+			board[i][j] = choice;
 		}
 	}
 
