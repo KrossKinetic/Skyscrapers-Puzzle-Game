@@ -75,7 +75,7 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
                 break;
             }
 
-            if (!('1' <= choice && choice <= '5')){
+            if (!('1' <= choice && choice <= '0'+size)){
                 printf("Invalid choice. ");
                 continue;
             } else {
@@ -92,7 +92,7 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
             scanf(" %d", &row);
             getchar();
 
-            if (!(0 <= row && row <= 4)){
+            if (!(0 <= row && row <= size-1)){
                 printf("Invalid choice. ");
                 continue;
             } else {
@@ -105,7 +105,7 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
             scanf(" %d", &col);
             getchar();
 
-            if (!(0 <= col && col <= 4)){
+            if (!(0 <= col && col <= size-1)){
                 printf("Invalid choice. ");
                 continue;
             } else {
