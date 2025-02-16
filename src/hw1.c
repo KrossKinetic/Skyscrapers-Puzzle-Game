@@ -32,42 +32,39 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
     //./build/hw1_game 4 "3-2-431-1-4--1-4" "2124242121333321"
     //./build/hw1_game 4 "3-21-3---2---1--" "2124242121333321"
 	
+    // Initialized Keys
+    for (int i = 0; i < 4; i++){
+        for (int j = 0; j < size; j++){
+            int to_put = keys[i*(size)+j]-'0';
+            if (i==0){
+                top_key[j] = to_put;
+            } else if (i==1){
+                bottom_key[j] = to_put;
+            } else if (i==2){
+                left_key[j] = to_put;
+            } else {
+                right_key[j] = to_put;
+            }
+        }
+    }
+
     for (int i = 0; i < size; i++){
 		for (int j = 0; j < size; j++){
             char choice = (initial_state[i*(size)+j]);
+            int sus_input = 0;
             // Checking for Rule 1
-            if (choice != '-' && check_board_row_col(size,choice,i,j)==0){
-                printf("Invalid initial board state.\n");
-                return 0;
-            }
-			board[i][j] = choice;
+            if (choice != '-' && check_board_row_col(size,choice,i,j)==0) sus_input = 1;
+			
+            board[i][j] = choice;
 
             // Checking for Rule 2
-            if (check_row_filled(size,i) == 1 && check_2nd_key_req_row(size,i)==0){
-                printf("Invalid initial board state.\n");
-                return 0;
-            }
-    
-            if (check_col_filled(size,j) == 1 && check_2nd_key_req_col(size,j)==0){
-                printf("Invalid initial board state.\n");
-                return 0;
-            }
-		}
-	}
+            if (check_row_filled(size,i) == 1 && check_2nd_key_req_row(size,i)==0) sus_input = 1;
+            if (check_col_filled(size,j) == 1 && check_2nd_key_req_col(size,j)==0) sus_input = 1;
 
-	// Initialized Keys
-	for (int i = 0; i < 4; i++){
-		for (int j = 0; j < size; j++){
-			int to_put = keys[i*(size)+j]-'0';
-			if (i==0){
-				top_key[j] = to_put;
-			} else if (i==1){
-				bottom_key[j] = to_put;
-			} else if (i==2){
-				left_key[j] = to_put;
-			} else {
-				right_key[j] = to_put;
-			}
+            if (sus_input == 1){
+                printf("Invalid initial board state.\n");
+                return 0;
+            }
 		}
 	}
 	
