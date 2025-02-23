@@ -497,10 +497,6 @@ int solve(const char *initial_state, const char *keys, int size){
             }
         }
 
-        heuristic_3(size);
-        heuristic_2(size);
-        heuristic_3(size);
-
         // For Rows
         for (int i = 0; i < size; i++) {
             int arr_of_possible_values[MAX_LENGTH][MAX_LENGTH];
@@ -569,17 +565,6 @@ int solve(const char *initial_state, const char *keys, int size){
     // Final Heurestic, pick lowest value and loop Hueristic 2 and 3 until solved.
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            if (board[i][j] == '-'){
-                for (int k = 0; k < size; k++){
-                    if (array_values[i][j][k] == 1) {
-                        board[i][j] = (k+1) + '0';
-                        break;
-                    }
-                }
-                heuristic_3(size);
-                heuristic_2(size);
-                heuristic_3(size);
-            }
         }
     }
     
