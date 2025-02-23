@@ -430,7 +430,7 @@ int solve(const char *initial_state, const char *keys, int size){
     heuristic_2(size);
 
     // Heurestic 4 Repeated Several several times to ensure all possible values are covered
-    for (int pt = 0; pt < 40; pt++){
+    for (int pt = 0; pt < 20; pt++){
         // This is for column
         for (int i = 0; i < size; i++) {
             
@@ -565,6 +565,18 @@ int solve(const char *initial_state, const char *keys, int size){
     // Final Heurestic, pick lowest value and loop Hueristic 2 and 3 until solved.
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
+            if (board[i][j] == '-'){
+                for (int k = 0; k < size; k++){
+                    if (array_values[i][j][k] == 1) {
+                        board[i][j] = (k+1) + '0';
+                        array_values[i][j][k] = 0;
+                        break;
+                    }
+                }
+                heuristic_3(size);
+                heuristic_2(size);
+                heuristic_3(size);
+            }
         }
     }
     
