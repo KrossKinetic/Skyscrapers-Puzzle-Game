@@ -14,7 +14,17 @@ char board[MAX_LENGTH][MAX_LENGTH] = {0};
 
 int length = 5;
 
-// List of Helper Functions
+// A very long List of Helper Functions
+void printResultCount(int resultCount, int size, int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]);
+int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]);
+void generateCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], 
+    int currentRow[MAX_LENGTH], int index, 
+    int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH], 
+    int *resultCount, bool usedHeights[MAX_LENGTH]);
+void heuristic_1(int size);
+void heuristic_2(int size);
+void heuristic_3(int size);
+void print3DArray(int size);
 int check_col_filled(int size, int col);
 int check_row_filled(int size, int row);
 int check_2nd_key_req_row(int size, int row);
@@ -25,13 +35,11 @@ void print_2D_array(int size);
 void print_array_int(int[],int);
 void printCharNTimes(char,int);
 
+int array_values[MAX_LENGTH][MAX_LENGTH][MAX_LENGTH] = {0}; 
 
 int initialize_board(const char *initial_state, const char *keys, int size) {
 	
-    //Initialized Board, (cmake -S . -B build; cmake --build build; ./build/hw1...)
-    //./build/hw1_game 4 "3-2-431-1-4--1-4" "2124242121333321"
-    //./build/hw1_game 4 "3-21-3---2---1--" "2124242121333321"
-
+    //Initialized Board, (cmake -S . -B build; cmake --build build; ./build/hw1...
     // Initialize Entire Board with '-'
     for (int i = 0; i < size; i++){
 		for (int j = 0; j < size; j++){
@@ -332,11 +340,363 @@ void printCharNTimes(char c, int n) {
     printf("\n");
 }
 
+// Part 2 Starts From Here
+
+#include <stdio.h>
+#include <string.h>
+
 int solve(const char *initial_state, const char *keys, int size){
-	(void) initial_state;
-	(void) keys;
-	(void) size;
+    // Initialize Entire Board with '-'
+    for (int i = 0; i < size; i++){
+		for (int j = 0; j < size; j++){
+            board[i][j] = '-';
+		}
+	}
+
+    // Initialized Keys
+    for (int i = 0; i < 4; i++){
+        for (int j = 0; j < size; j++){
+            int to_put = keys[i*(size)+j]-'0';
+            if (i==0){
+                top_key[j] = to_put;
+            } else if (i==1){
+                bottom_key[j] = to_put;
+            } else if (i==2){
+                left_key[j] = to_put;
+            } else {
+                right_key[j] = to_put;
+            }
+        }
+    }
+
+    for (int i = 0; i < size; i++){
+		for (int j = 0; j < size; j++){
+            char choice = (initial_state[i*(size)+j]);
+            int sus_input = 0;
+            // Checking for Rule 1
+            if (choice != '-' && check_board_row_col(size,choice,i,j)==0) sus_input = 1;
+            board[i][j] = choice;
+
+            // Checking for Rule 2
+            if (check_row_filled(size,i) == 1 && check_2nd_key_req_row(size,i)==0) sus_input = 1;
+            if (check_col_filled(size,j) == 1 && check_2nd_key_req_col(size,j)==0) sus_input = 1;
+
+            if (sus_input == 1){
+                printf("Invalid initial board state.\n");
+                return 0;
+            }
+		}
+	}
 	
+    // Heuristic 1
+    // Check each column to see if key = 1, then place 4 right next to it. && Check each column to see if key = size, then simply place values 0 to size sequentially
+    for (int i = 0; i < size; i++){
+        int key_value_top = top_key[i];
+        int key_value_bottom = bottom_key[i];
+        char value_top = board[0][i];
+        char value_bottom = board[size][i];
+
+        if (value_top != '-' && key_value_top == 1){
+            board[0][i] = (char) (size + '0');
+        }
+
+        if (value_bottom != '-' && key_value_bottom == 1){
+            board[size][i] = (char) (size + '0');
+        }
+
+        if (key_value_top == size){
+            for (int j = 0; j < size; j++){
+                board[j][i] = (char) ((j + 1) + '0');
+            }
+        }
+
+        if (key_value_bottom == size){
+            for (int j = (size-1); j >= 0; j--){
+                board[j][i] = (char) ((size-j) + '0');
+            }
+        }
+    }
+    
+    // initialize all the '-' with an array to keep track of valid values.
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            if (board[i][j] != '-'){
+                array_values[i][j][(board[i][j] - '0') - 1] = 1;
+                continue;
+            }
+            for (int k = 0; k < size; k++) array_values[i][j][k] = 1;
+        }
+    }
+
+    // Heurestic 1
+    //./build/hw1_solver 4 "3-2-431-1-4--1-4" "2124242121333321"
+    heuristic_1(size);
+
+    // Heurestic 2
+    heuristic_2(size);
+
+    // Heurestic 3 + 2
+    heuristic_3(size);
+    heuristic_2(size);
+    
+    // Heurestic 4
+    // This is for column
+    for (int i = 0; i < size; i++) {
+        
+        int arr_of_possible_values[MAX_LENGTH][MAX_LENGTH];
+        
+        for (int j = 0; j < size; j++) {
+            for (int k = 0; k < size; k++) {
+                arr_of_possible_values[j][k] = array_values[j][i][k];
+            }
+        }
+
+        int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH];
+        int resultCount = generateRowCombinations(size, arr_of_possible_values, results);
+
+        for (int t = 0; t < resultCount; t++){
+            int visibility_goal_top = top_key[i];
+            int visibility_goal_bottom = bottom_key[i];
+            int visibilty = 1;
+            int tallest_building;
+
+
+            if (visibility_goal_top != 0){
+                tallest_building = results[t][0];
+                for (int m = 0; m < size; m++){
+                    if (results[t][m]>tallest_building){
+                        tallest_building = results[t][m];
+                        visibilty++;
+                    }
+                }
+                if (visibility_goal_top != visibilty){
+                    results[t][0] = 0;
+                }
+                visibilty = 1;
+            }
+
+            if (visibility_goal_bottom != 0){
+                tallest_building = results[t][size-1];
+                for (int m = size-2; m >= 0; m--){
+                    if (results[t][m]>tallest_building){
+                        tallest_building = results[t][m];
+                        visibilty++;
+                    }
+                }
+                if (visibility_goal_bottom != visibilty) {
+                    results[t][0] = 0;
+                };
+                visibilty = 1;
+            }
+        }
+
+        // Now we do elimination again
+        for (int j = 0; j < size; j++) {
+            for (int p = 0; p < size; p++){
+                array_values[j][i][p] = 0;
+            }
+        }
+
+        for (int m = 0; m < resultCount; m++){
+            if (results[m][0] == 0) continue;
+            for (int j = 0; j < size; j++) {
+                int result_val = results[m][j];
+                array_values[j][i][result_val-1] = 1;
+            }
+        }
+    }
+
+    // For Rows
+    for (int i = 0; i < size; i++) {
+        int arr_of_possible_values[MAX_LENGTH][MAX_LENGTH];
+        for (int j = 0; j < size; j++) {
+            for (int k = 0; k < size; k++) {
+                arr_of_possible_values[j][k] = array_values[i][j][k];
+            }
+        }
+        int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH];
+        int resultCount = generateRowCombinations(size, arr_of_possible_values, results);
+    
+        for (int t = 0; t < resultCount; t++) {
+            int visibility_goal_left = left_key[i];
+            int visibility_goal_right = right_key[i];
+            int visibility = 1;
+            int tallest_building;
+    
+            if (visibility_goal_left != 0) {
+                tallest_building = results[t][0];
+                for (int m = 1; m < size; m++) {
+                    if (results[t][m] > tallest_building) {
+                        tallest_building = results[t][m];
+                        visibility++;
+                    }
+                }
+                if (visibility_goal_left != visibility) {
+                    results[t][0] = 0;
+                }
+                visibility = 1;
+            }
+    
+            if (visibility_goal_right != 0) {
+                tallest_building = results[t][size - 1];
+                for (int m = size - 2; m >= 0; m--) {
+                    if (results[t][m] > tallest_building) {
+                        tallest_building = results[t][m];
+                        visibility++;
+                    }
+                }
+                if (visibility_goal_right != visibility) {
+                    results[t][0] = 0;
+                }
+                visibility = 1;
+            }
+        }
+
+        // Now we do elimination again
+        for (int j = 0; j < size; j++) {
+            for (int p = 0; p < size; p++){
+                array_values[i][j][p] = 0;
+            }
+        }
+
+        for (int m = 0; m < resultCount; m++){
+            if (results[m][0] == 0) continue;
+            for (int j = 0; j < size; j++) {
+                int result_val = results[m][j];
+                array_values[i][j][result_val-1] = 1;
+            }
+        }
+    }
+
+    heuristic_3(size);
+    heuristic_2(size);
+    heuristic_3(size);
+
+    print_2D_array(size);
 	return 1;
-	
 }
+
+void printResultCount(int resultCount, int size, int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]){
+    printf("Total Combinations: %d\n", resultCount);
+    for (int i = 0; i < resultCount; i++) {
+        printf("{ ");
+        for (int j = 0; j < size; j++) {
+            if (results[i][0] != 0) printf("%d ", results[i][j]);
+        }
+        printf("}\n");
+    }
+}
+
+void print3DArray(int size) {
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            printf("{");
+            for (int k = 0; k < size; k++) {
+                if (array_values[i][j][k] == 1) printf("%d", k+1);
+                if (k < size - 1 && array_values[i][j][k] == 1) printf(",");
+            }
+            printf("} ");
+        }
+        printf("\n");
+    }
+}
+
+void heuristic_1(int size){
+    for (int i = 0; i < size; i++) {
+        int key_value_top = top_key[i];
+        int key_value_bottom = bottom_key[i];
+        for (int j = 0; j < size; j++) {
+            int part_of_heuristic_form_val_top = size - key_value_top + 2;
+            int part_of_heuristic_form_val_bottom = size - key_value_bottom + 2;
+
+            int heuristic_val_top = j + part_of_heuristic_form_val_top;
+            int heuristic_val_bottom = ((size - 1) - j) + part_of_heuristic_form_val_bottom;
+    
+            if (heuristic_val_top > 0 && heuristic_val_top <= size) {
+                for (int k = heuristic_val_top; k <= size; k++) {
+                    array_values[j][i][k - 1] = 0;
+                }
+            }
+    
+            if (heuristic_val_bottom > 0 && heuristic_val_bottom <= size) {
+                for (int k = heuristic_val_bottom; k <= size; k++) {
+                    array_values[j][i][k - 1] = 0;
+                }
+            }
+        }
+    }
+}
+
+void heuristic_2(int size){
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            char val = board[i][j];
+            if (val != '-'){
+                int val_to_remove = val - '0';
+                for (int k = 0; k < size; k++){
+                    if (j != k) array_values[i][k][val_to_remove-1] = 0;
+                    if (i != k) array_values[k][j][val_to_remove-1] = 0;
+                }
+            }
+        }
+    }
+}
+
+void heuristic_3(int size){
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            if (board[i][j] == '-'){
+                int found = 0;
+                int val_found = 0;
+                for (int k = 0; k < size; k++){
+                    if (array_values[i][j][k] == 1){
+                        found++;
+                        val_found = k+1;
+                    }
+                }
+                if (found != 1) continue;
+                board[i][j] = '0' + val_found;
+            }
+        }
+    }
+}
+
+void generateCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], 
+                          int currentRow[MAX_LENGTH], int index, 
+                          int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH], 
+                          int *resultCount, bool usedHeights[MAX_LENGTH]) {
+    if (index == rowSize) {
+        // Add the current valid combination to results
+        for (int i = 0; i < rowSize; i++) {
+            results[*resultCount][i] = currentRow[i];
+        }
+        (*resultCount)++;
+        return;
+    }
+
+    // Try all possible values for the current cell
+    for (int k = 0; k < MAX_LENGTH; k++) {
+        if (possibleValues[index][k] == 1 && !usedHeights[k]) { // Check if value is valid and not already used
+            currentRow[index] = k + 1;     // Assign value to the current cell
+            usedHeights[k] = true;         // Mark this height as used
+            generateCombinations(rowSize, possibleValues, currentRow, index + 1,
+                                 results, resultCount, usedHeights);
+            usedHeights[k] = false;        // Backtrack: Unmark this height
+        }
+    }
+}
+
+int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], 
+                             int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]) {
+    int currentRow[MAX_LENGTH];             // Temporary array to store one combination
+    int resultCount = 0;                    // Counter for number of valid combinations
+    bool usedHeights[MAX_LENGTH] = {false}; // To track which heights are already used
+
+    generateCombinations(rowSize, possibleValues, currentRow, 0,
+                         results, &resultCount, usedHeights);
+
+    return resultCount;
+}
+
+
+
