@@ -441,7 +441,7 @@ int solve(const char *initial_state, const char *keys, int size){
             }
         }
 
-        int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH];
+        int results[MAX_LENGTH * MAX_LENGTH*MAX_LENGTH*MAX_LENGTH][MAX_LENGTH];
         int resultCount = generateRowCombinations(size, arr_of_possible_values, results);
 
         for (int t = 0; t < resultCount; t++){
@@ -504,7 +504,7 @@ int solve(const char *initial_state, const char *keys, int size){
                 arr_of_possible_values[j][k] = array_values[i][j][k];
             }
         }
-        int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH];
+        int results[MAX_LENGTH * MAX_LENGTH*MAX_LENGTH*MAX_LENGTH][MAX_LENGTH];
         int resultCount = generateRowCombinations(size, arr_of_possible_values, results);
     
         for (int t = 0; t < resultCount; t++) {
@@ -650,7 +650,7 @@ void heuristic_3(int size){
     }
 }
 
-int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]) {
+int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], int results[MAX_LENGTH * MAX_LENGTH*MAX_LENGTH*MAX_LENGTH][MAX_LENGTH]) {
     int resultCount = 0;
     int stack[MAX_LENGTH];
     bool usedHeights[MAX_LENGTH] = {false};
