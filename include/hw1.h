@@ -13,7 +13,7 @@ int initialize_board(const char *initial_state, const char *keys, int size);
 int solve(const char *initial_state, const char *keys, int size);
 
 void printResultCount(int resultCount, int size, int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]);
-int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], int results[MAX_LENGTH * MAX_LENGTH * MAX_LENGTH*MAX_LENGTH][MAX_LENGTH]);
+int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], int results[MAX_LENGTH * MAX_LENGTH * MAX_LENGTH * MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]);
 void generateCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], int currentRow[MAX_LENGTH], int index, int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH], int *resultCount, bool usedHeights[MAX_LENGTH]);
 void heuristic_1(int size);
 void heuristic_2(int size);
