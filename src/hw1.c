@@ -562,22 +562,21 @@ int solve(const char *initial_state, const char *keys, int size){
     heuristic_3(size);
 
     // Final Heurestic, pick lowest value and loop Hueristic 2 and 3 until solved.
-    for (int f = 0; f < 10; f++){
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (board[i][j] == '-'){
-                    for (int k = 0; k < size; k++){
-                        if (array_values[i][j][k] == 1) board[i][j] = (k+1) + '0';
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            if (board[i][j] == '-'){
+                for (int k = 0; k < size; k++){
+                    if (array_values[i][j][k] == 1) {
+                        board[i][j] = (k+1) + '0';
                         break;
                     }
                 }
-                heuristic_3(size);
-                heuristic_2(size);
-                heuristic_3(size);
             }
+            heuristic_3(size);
+            heuristic_2(size);
+            heuristic_3(size);
         }
     }
-
     print3DArray(size);
     print_2D_array(size);
 	return 1;
@@ -619,13 +618,13 @@ void heuristic_1(int size){
             int heuristic_val_top = j + part_of_heuristic_form_val_top;
             int heuristic_val_bottom = ((size - 1) - j) + part_of_heuristic_form_val_bottom;
     
-            if (heuristic_val_top > 0 && heuristic_val_top <= size) {
+            if (heuristic_val_top > 0 && heuristic_val_top <= size && key_value_top != 0) {
                 for (int k = heuristic_val_top; k <= size; k++) {
                     array_values[j][i][k - 1] = 0;
                 }
             }
     
-            if (heuristic_val_bottom > 0 && heuristic_val_bottom <= size) {
+            if (heuristic_val_bottom > 0 && heuristic_val_bottom <= size && key_value_bottom != 0) {
                 for (int k = heuristic_val_bottom; k <= size; k++) {
                     array_values[j][i][k - 1] = 0;
                 }
