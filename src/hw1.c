@@ -659,31 +659,52 @@ void heuristic_3(int size){
     }
 }
 
-void generateCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], int currentRow[MAX_LENGTH], int index, int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH], int *resultCount, bool usedHeights[MAX_LENGTH]) {
-    if (index == rowSize) {
-        for (int i = 0; i < rowSize; i++) {
-            results[*resultCount][i] = currentRow[i];
-        }
-        (*resultCount)++;
-        return;
-    }
-
-    
-    for (int k = 0; k < MAX_LENGTH; k++) {
-        if (possibleValues[index][k] == 1 && !usedHeights[k]) {
-            currentRow[index] = k + 1;
-            usedHeights[k] = true;
-            generateCombinations(rowSize, possibleValues, currentRow, index + 1,results, resultCount, usedHeights);
-            usedHeights[k] = false;
-        }
-    }
-}
-
-int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH],int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]) {
-    int currentRow[MAX_LENGTH];
+int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]) {
     int resultCount = 0;
-    bool usedHeights[MAX_LENGTH] = {false};;
-    generateCombinations(rowSize, possibleValues, currentRow, 0,results, &resultCount, usedHeights);
+    int stack[MAX_LENGTH];
+    bool usedHeights[MAX_LENGTH] = {false};
+    int currentRow[MAX_LENGTH];
+
+    memset(stack, 0, sizeof(stack));
+    int index = 0;
+
+    while (index >= 0) {
+        bool foundNextValue = false;
+        for (; stack[index] < MAX_LENGTH; stack[index]++) {
+            int k = stack[index];
+            if (possibleValues[index][k] == 1 && !usedHeights[k]) {
+                currentRow[index] = k + 1;
+                usedHeights[k] = true;
+
+                stack[index]++;
+                index++;
+                if (index < rowSize) {
+                    stack[index] = 0;
+                }
+                foundNextValue = true;
+                break;
+            }
+        }
+
+        if (!foundNextValue) {
+            if (index > 0) {
+                index--;
+                int prevValue = currentRow[index] - 1;
+                usedHeights[prevValue] = false;
+            } else {
+                break;
+            }
+        } else if (index == rowSize) {
+            for (int i = 0; i < rowSize; i++) {
+                results[resultCount][i] = currentRow[i];
+            }
+            resultCount++;
+            index--;
+            int prevValue = currentRow[index] - 1;
+            usedHeights[prevValue] = false;
+        }
+    }
+
     return resultCount;
 }
 
