@@ -582,17 +582,6 @@ int solve(const char *initial_state, const char *keys, int size){
 	return 1;
 }
 
-void printResultCount(int resultCount, int size, int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]){
-    printf("Total Combinations: %d\n", resultCount);
-    for (int i = 0; i < resultCount; i++) {
-        printf("{ ");
-        for (int j = 0; j < size; j++) {
-            if (results[i][0] != 0) printf("%d ", results[i][j]);
-        }
-        printf("}\n");
-    }
-}
-
 void print3DArray(int size) {
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
