@@ -27,6 +27,7 @@ int check_board(int size);
 void print_2D_array(int size);
 void print_array_int(int[],int);
 void printCharNTimes(char,int);
+void heurestic_4(int size);
 
 /* Hints from our solution (feel free to use or ignore):
 
