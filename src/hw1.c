@@ -438,20 +438,16 @@ int solve(const char *initial_state, const char *keys, int size){
     }
 
     // Final Heurestic, pick lowest value and loop Hueristic 2 and 3 until solved.
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            if (board[i][j] == '-'){
-                board[i][j] = (3) + '0';
-                array_values[i][j][2] = 0;
-                heuristic_3(size);
-                heuristic_2(size);
-                heuristic_3(size);
-                heuristic_2(size);
-                heuristic_3(size);
-                heuristic_2(size);
-                heuristic_3(size);
-            }
-        }
+    if (board[0][0] == '-'){
+        board[0][0] = (3) + '0';
+        array_values[0][0][2] = 0;
+        heuristic_3(size);
+        heuristic_2(size);
+        heuristic_3(size);
+        heuristic_2(size);
+        heuristic_3(size);
+        heuristic_2(size);
+        heuristic_3(size);
     }
     
     print3DArray(size);
