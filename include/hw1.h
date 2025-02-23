@@ -12,6 +12,22 @@
 int initialize_board(const char *initial_state, const char *keys, int size);
 int solve(const char *initial_state, const char *keys, int size);
 
+void printResultCount(int resultCount, int size, int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]);
+int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]);
+void generateCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], int currentRow[MAX_LENGTH], int index, int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH], int *resultCount, bool usedHeights[MAX_LENGTH]);
+void heuristic_1(int size);
+void heuristic_2(int size);
+void heuristic_3(int size);
+void print3DArray(int size);
+int check_col_filled(int size, int col);
+int check_row_filled(int size, int row);
+int check_2nd_key_req_row(int size, int row);
+int check_2nd_key_req_col(int size, int col);
+int check_board_row_col(int size, char value,int row,int col);
+int check_board(int size);
+void print_2D_array(int size);
+void print_array_int(int[],int);
+void printCharNTimes(char,int);
 
 /* Hints from our solution (feel free to use or ignore):
 
