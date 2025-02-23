@@ -642,47 +642,33 @@ void heuristic_3(int size){
 
 int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]) {
     int resultCount = 0;
-    int stack[MAX_LENGTH];
+    int stack[MAX_LENGTH] = {0};
     bool usedHeights[MAX_LENGTH] = {false};
-    int currentRow[MAX_LENGTH];
-
-    memset(stack, 0, sizeof(stack));
     int index = 0;
 
     while (index >= 0) {
-        bool foundNextValue = false;
-        for (; stack[index] < MAX_LENGTH; stack[index]++) {
-            int k = stack[index];
-            if (possibleValues[index][k] == 1 && !usedHeights[k]) {
-                currentRow[index] = k + 1;
-                usedHeights[k] = true;
-
-                stack[index]++;
-                index++;
-                if (index < rowSize) {
-                    stack[index] = 0;
-                }
-                foundNextValue = true;
-                break;
-            }
-        }
-
-        if (!foundNextValue) {
+        if (stack[index] >= MAX_LENGTH) {
             if (index > 0) {
                 index--;
-                int prevValue = currentRow[index] - 1;
-                usedHeights[prevValue] = false;
+                usedHeights[stack[index] - 1] = false;
             } else {
                 break;
             }
-        } else if (index == rowSize) {
-            for (int i = 0; i < rowSize; i++) {
-                results[resultCount][i] = currentRow[i];
+        } else if (possibleValues[index][stack[index]] == 1 && !usedHeights[stack[index]]) {
+            usedHeights[stack[index]] = true;
+            if (index == rowSize - 1) {
+                for (int i = 0; i <= index; i++) {
+                    results[resultCount][i] = stack[i] + 1;
+                }
+                resultCount++;
+                usedHeights[stack[index]] = false;
+                stack[index]++;
+            } else {
+                index++;
+                stack[index] = 0;
             }
-            resultCount++;
-            index--;
-            int prevValue = currentRow[index] - 1;
-            usedHeights[prevValue] = false;
+        } else {
+            stack[index]++;
         }
     }
 
