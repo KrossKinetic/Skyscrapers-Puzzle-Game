@@ -29,7 +29,7 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
 
 
     // Initialized Keys
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < size; i++){
         for (int j = 0; j < size; j++){
             int to_put = keys[i*(size)+j]-'0';
             if (i==0){
@@ -373,26 +373,35 @@ int solve(const char *initial_state, const char *keys, int size){
     for (int i = 0; i < size; i++){
         int key_value_top = top_key[i];
         int key_value_bottom = bottom_key[i];
+
+        if (key_value_top == 0 && key_value_bottom == 0) {
+            continue;
+        }
+
         char value_top = board[0][i];
         char value_bottom = board[size-1][i];
 
-        if (value_top != '-' && key_value_top == 1){
-            board[0][i] = (char) (size + '0');
-        }
-
-        if (value_bottom != '-' && key_value_bottom == 1){
-            board[size][i] = (char) (size + '0');
-        }
-
-        if (key_value_top == size){
-            for (int j = 0; j < size; j++){
-                board[j][i] = (char) ((j + 1) + '0');
+        if (key_value_top != 0){
+            if (value_top != '-' && key_value_top == 1){
+                board[0][i] = (char) (size + '0');
+            }
+    
+            if (key_value_top == size){
+                for (int j = 0; j < size; j++){
+                    board[j][i] = (char) ((j + 1) + '0');
+                }
             }
         }
 
-        if (key_value_bottom == size){
-            for (int j = (size-1); j >= 0; j--){
-                board[j][i] = (char) ((size-j) + '0');
+        if (key_value_bottom != 0){
+            if (value_bottom != '-' && key_value_bottom == 1){
+                board[size-1][i] = (char) (size + '0');
+            }
+
+            if (key_value_bottom == size){
+                for (int j = (size-1); j >= 0; j--){
+                    board[j][i] = (char) ((size-j) + '0');
+                }
             }
         }
     }
@@ -438,6 +447,7 @@ int solve(const char *initial_state, const char *keys, int size){
         for (int t = 0; t < resultCount; t++){
             int visibility_goal_top = top_key[i];
             int visibility_goal_bottom = bottom_key[i];
+            
             int visibilty = 1;
             int tallest_building;
 
@@ -642,35 +652,47 @@ void heuristic_3(int size){
 
 int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]) {
     int resultCount = 0;
-    int stack[MAX_LENGTH] = {0};
+    int stack[MAX_LENGTH];
     bool usedHeights[MAX_LENGTH] = {false};
+    int currentRow[MAX_LENGTH];
+
+    memset(stack, 0, sizeof(stack));
     int index = 0;
 
     while (index >= 0) {
-        if (stack[index] >= MAX_LENGTH) {
+        bool foundNextValue = false;
+        for (; stack[index] < MAX_LENGTH; stack[index]++) {
+            int k = stack[index];
+            if (possibleValues[index][k] == 1 && !usedHeights[k]) {
+                currentRow[index] = k + 1;
+                usedHeights[k] = true;
+
+                stack[index]++;
+                index++;
+                if (index < rowSize) {
+                    stack[index] = 0;
+                }
+                foundNextValue = true;
+                break;
+            }
+        }
+
+        if (!foundNextValue) {
             if (index > 0) {
                 index--;
-                if (index >= 0) {  // Ensure bounds check
-                    usedHeights[stack[index]] = false;
-                }
+                int prevValue = currentRow[index] - 1;
+                usedHeights[prevValue] = false;
             } else {
                 break;
             }
-        } else if (possibleValues[index][stack[index]] == 1 && !usedHeights[stack[index]]) {
-            usedHeights[stack[index]] = true;
-            if (index == rowSize - 1) {
-                for (int i = 0; i <= index; i++) {
-                    results[resultCount][i] = stack[i] + 1;
-                }
-                resultCount++;
-                usedHeights[stack[index]] = false;
-                stack[index]++;
-            } else {
-                index++;
-                stack[index] = 0;
+        } else if (index == rowSize) {
+            for (int i = 0; i < rowSize; i++) {
+                results[resultCount][i] = currentRow[i];
             }
-        } else {
-            stack[index]++;
+            resultCount++;
+            index--;
+            int prevValue = currentRow[index] - 1;
+            usedHeights[prevValue] = false;
         }
     }
 
