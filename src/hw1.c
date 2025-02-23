@@ -29,7 +29,7 @@ int initialize_board(const char *initial_state, const char *keys, int size) {
 
 
     // Initialized Keys
-    for (int i = 0; i < size; i++){
+    for (int i = 0; i < 4; i++){
         for (int j = 0; j < size; j++){
             int to_put = keys[i*(size)+j]-'0';
             if (i==0){
