@@ -650,7 +650,9 @@ int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENG
         if (stack[index] >= MAX_LENGTH) {
             if (index > 0) {
                 index--;
-                usedHeights[stack[index] - 1] = false;
+                if (index >= 0) {  // Ensure bounds check
+                    usedHeights[stack[index]] = false;
+                }
             } else {
                 break;
             }
