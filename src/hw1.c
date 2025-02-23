@@ -451,6 +451,10 @@ int solve(const char *initial_state, const char *keys, int size){
                 heuristic_3(size);
                 heuristic_2(size);
                 heuristic_3(size);
+                heurestic_4(size);
+                heuristic_3(size);
+                heuristic_2(size);
+                heuristic_3(size);
             }
         }
     }
