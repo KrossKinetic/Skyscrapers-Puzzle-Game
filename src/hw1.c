@@ -374,7 +374,7 @@ int solve(const char *initial_state, const char *keys, int size){
         int key_value_top = top_key[i];
         int key_value_bottom = bottom_key[i];
         char value_top = board[0][i];
-        char value_bottom = board[size][i];
+        char value_bottom = board[size-1][i];
 
         if (value_top != '-' && key_value_top == 1){
             board[0][i] = (char) (size + '0');
@@ -419,6 +419,8 @@ int solve(const char *initial_state, const char *keys, int size){
     // Heurestic 3 + 2
     heuristic_3(size);
     heuristic_2(size);
+
+    
 
     heuristic_3(size);
     heuristic_2(size);
