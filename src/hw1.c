@@ -490,7 +490,6 @@ int solve(const char *initial_state, const char *keys, int size){
             }
         }
 
-        // Now we do elimination again
         for (int j = 0; j < size; j++) {
             for (int p = 0; p < size; p++){
                 array_values[j][i][p] = 0;
@@ -552,7 +551,6 @@ int solve(const char *initial_state, const char *keys, int size){
             }
         }
 
-        // Now we do elimination again
         for (int j = 0; j < size; j++) {
             for (int p = 0; p < size; p++){
                 array_values[i][j][p] = 0;
@@ -661,12 +659,8 @@ void heuristic_3(int size){
     }
 }
 
-void generateCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], 
-                          int currentRow[MAX_LENGTH], int index, 
-                          int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH], 
-                          int *resultCount, bool usedHeights[MAX_LENGTH]) {
+void generateCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], int currentRow[MAX_LENGTH], int index, int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH], int *resultCount, bool usedHeights[MAX_LENGTH]) {
     if (index == rowSize) {
-        // Add the current valid combination to results
         for (int i = 0; i < rowSize; i++) {
             results[*resultCount][i] = currentRow[i];
         }
@@ -674,27 +668,22 @@ void generateCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH
         return;
     }
 
-    // Try all possible values for the current cell
+    
     for (int k = 0; k < MAX_LENGTH; k++) {
-        if (possibleValues[index][k] == 1 && !usedHeights[k]) { // Check if value is valid and not already used
-            currentRow[index] = k + 1;     // Assign value to the current cell
-            usedHeights[k] = true;         // Mark this height as used
-            generateCombinations(rowSize, possibleValues, currentRow, index + 1,
-                                 results, resultCount, usedHeights);
-            usedHeights[k] = false;        // Backtrack: Unmark this height
+        if (possibleValues[index][k] == 1 && !usedHeights[k]) {
+            currentRow[index] = k + 1;
+            usedHeights[k] = true;
+            generateCombinations(rowSize, possibleValues, currentRow, index + 1,results, resultCount, usedHeights);
+            usedHeights[k] = false;
         }
     }
 }
 
-int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH], 
-                             int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]) {
-    int currentRow[MAX_LENGTH];             // Temporary array to store one combination
-    int resultCount = 0;                    // Counter for number of valid combinations
-    bool usedHeights[MAX_LENGTH] = {false}; // To track which heights are already used
-
-    generateCombinations(rowSize, possibleValues, currentRow, 0,
-                         results, &resultCount, usedHeights);
-
+int generateRowCombinations(int rowSize, int possibleValues[MAX_LENGTH][MAX_LENGTH],int results[MAX_LENGTH * MAX_LENGTH][MAX_LENGTH]) {
+    int currentRow[MAX_LENGTH];
+    int resultCount = 0;
+    bool usedHeights[MAX_LENGTH] = {false};;
+    generateCombinations(rowSize, possibleValues, currentRow, 0,results, &resultCount, usedHeights);
     return resultCount;
 }
 
