@@ -430,7 +430,7 @@ int solve(const char *initial_state, const char *keys, int size){
     heuristic_2(size);
 
     // Heurestic 4 Repeated Several several times to ensure all possible values are covered
-    for (int pt = 0; pt < 20; pt++){
+    for (int pt = 0; pt < 40; pt++){
         // This is for column
         for (int i = 0; i < size; i++) {
             
