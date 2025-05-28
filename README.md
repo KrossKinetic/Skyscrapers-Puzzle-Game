@@ -96,3 +96,7 @@ The project is configured to be built and run using CMake and VS Code launch tar
 
 5.  **Run Tests**:
     * Execute the `Run Solver Tests` launch target to run a set of unit tests against the implementation.
+
+---
+
+## CSE220 Completion Score: 88%
