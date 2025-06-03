@@ -1,6 +1,6 @@
-# CSE 220 HW1: Skyscrapers Puzzle Game
+# Skyscrapers Puzzle Game
 
-This project is an implementation of the single-player puzzle game "Skyscrapers," completed as part of the CSE 220: Systems Fundamentals I course at Stony Brook University. The implementation is done in C and includes both an interactive version of the game and an automatic solver based on logical heuristics.
+This project is an implementation of the single-player puzzle game "Skyscrapers". The implementation is done in C and includes both an interactive version of the game and an automatic solver based on logical heuristics.
 
 ## Learning Outcomes
 
@@ -96,7 +96,3 @@ The project is configured to be built and run using CMake and VS Code launch tar
 
 5.  **Run Tests**:
     * Execute the `Run Solver Tests` launch target to run a set of unit tests against the implementation.
-
----
-
-## CSE220 Completion Score: 88%, Class Average Score of HW 1-4: 60%-70%
